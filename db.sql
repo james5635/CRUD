@@ -1,0 +1,5 @@
+CREATE TABLE Users (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100),
+    Age INT
+);
