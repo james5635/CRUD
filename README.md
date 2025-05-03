@@ -1,1 +1,11 @@
-# CRUD
+## Implement CRUD in 
+-  c
+-  c++
+-  go
+-  php
+-  ruby
+-  typescript
+-  java
+-  python
+-  rust
+-  c#
