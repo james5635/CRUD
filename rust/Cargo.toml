@@ -1,0 +1,10 @@
+[package]
+name = "rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tiberius = { version = "0.12", features = ["chrono", "rust_decimal"] } # Adjust version as needed
+tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7", features = ["compat"] }
+futures = "0.3"
