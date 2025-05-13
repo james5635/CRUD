@@ -1,0 +1,38 @@
+<div class="container">
+  <h2>Books Management</h2>
+  
+  <form (ngSubmit)="addBook()" class="add-form">
+    <div class="form-group">
+      <input [(ngModel)]="newBook.title" name="title" placeholder="Title" required class="form-control" />
+    </div>
+    <div class="form-group">
+      <input [(ngModel)]="newBook.author" name="author" placeholder="Author" required class="form-control" />
+    </div>
+    <div class="form-group">
+      <input [(ngModel)]="newBook.year" name="year" type="number" required class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Book</button>
+  </form>
+
+  <div class="books-list">
+    <div *ngFor="let book of books" class="book-item">
+      <div *ngIf="editing?.id !== book.id" class="book-content">
+        <div class="book-info">
+          <h3>"{{ book.title }}"</h3>
+          <p>by {{ book.author }} ({{ book.year }})</p>
+        </div>
+        <div class="book-actions">
+          <button (click)="editBook(book)" class="btn btn-edit">Edit</button>
+          <button (click)="deleteBook(book.id!)" class="btn btn-delete">Delete</button>
+        </div>
+      </div>
+
+      <div *ngIf="editing?.id === book.id" class="edit-form">
+        <input [(ngModel)]="editing!.title" name="editTitle" class="form-control" />
+        <input [(ngModel)]="editing!.author" name="editAuthor" class="form-control" />
+        <input [(ngModel)]="editing!.year" name="editYear" type="number" class="form-control" />
+        <button (click)="saveEdit()" class="btn btn-save">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
