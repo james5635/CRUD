@@ -1,4 +1,4 @@
-use library
+use('library')
 db.books.drop()
 db.books.insertMany(
     [
