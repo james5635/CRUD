@@ -49,6 +49,7 @@ func main() {
 	router.Use(cors.New(config))
 
 	router.GET("/books", controllers.GetBooks)
+	router.GET("/books/:id", controllers.GetBook)
 	router.POST("/books", controllers.CreateBook)
 	router.PUT("/books/:id", controllers.UpdateBook)
 	router.DELETE("/books/:id", controllers.DeleteBook)

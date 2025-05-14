@@ -40,24 +40,49 @@ func GetBooks(c *gin.Context) {
 	c.JSON(http.StatusOK, books)
 }
 
+func GetBook(c *gin.Context) {
+	bookID := c.Param("id")
+	objectID, err := bson.ObjectIDFromHex(bookID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID format"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var book models.Book
+	err = bookCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&book)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to find book"})
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, book)
+}
+
 func CreateBook(c *gin.Context) {
 	var book models.Book
-    if err := c.ShouldBindJSON(&book); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	if err := c.ShouldBindJSON(&book); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-    res, err := bookCollection.InsertOne(ctx, book)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
+	res, err := bookCollection.InsertOne(ctx, book)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-    book.ID = res.InsertedID.(bson.ObjectID)
-    c.JSON(http.StatusCreated, book)
+	book.ID = res.InsertedID.(bson.ObjectID)
+	c.JSON(http.StatusCreated, book)
 
 }
 func UpdateBook(c *gin.Context) {
@@ -68,35 +93,50 @@ func UpdateBook(c *gin.Context) {
 		return
 	}
 
-	var book models.Book
-	if err := c.ShouldBindJSON(&book); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
-
-	book.ID = objectID // Ensure the correct ObjectID is used
+	// First check if the book exists
+	var existingBook models.Book
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	filter := bson.M{"_id": objectID}
+	err = bookCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&existingBook)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to find book"})
+		}
+		return
+	}
+
+	var updateData models.Book
+	if err := c.ShouldBindJSON(&updateData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
 	update := bson.M{"$set": bson.M{
-		"title":  book.Title,
-		"author": book.Author,
-		"year":   book.Year,
+		"title":  updateData.Title,
+		"author": updateData.Author,
+		"year":   updateData.Year,
 	}}
-	result, err := bookCollection.UpdateOne(ctx, filter, update)
+
+	_, err = bookCollection.UpdateOne(ctx, bson.M{"_id": objectID}, update)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update book"})
 		return
 	}
 
-	if result.ModifiedCount == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+	// Return the updated book
+	var updatedBook models.Book
+	err = bookCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&updatedBook)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch updated book"})
 		return
 	}
 
-	c.JSON(http.StatusOK, book)
+	c.JSON(http.StatusOK, updatedBook)
 }
+
 func DeleteBook(c *gin.Context) {
 	bookID := c.Param("id")
 	objectID, err := bson.ObjectIDFromHex(bookID)
@@ -105,18 +145,24 @@ func DeleteBook(c *gin.Context) {
 		return
 	}
 
+	// First check if the book exists
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	filter := bson.M{"_id": objectID}
-	result, err := bookCollection.DeleteOne(ctx, filter)
+	var existingBook models.Book
+	err = bookCollection.FindOne(ctx, bson.M{"_id": objectID}).Decode(&existingBook)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete book"})
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to find book"})
+		}
 		return
 	}
 
-	if result.DeletedCount == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+	_, err = bookCollection.DeleteOne(ctx, bson.M{"_id": objectID})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete book"})
 		return
 	}
 
