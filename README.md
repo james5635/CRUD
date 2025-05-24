@@ -1,8 +1,8 @@
 ## Implement CRUD in 
 -  c
 -  c++
--  go
--  php
+- [x] go
+- [x] php
 -  ruby
 -  typescript
 -  java
