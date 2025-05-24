@@ -3,9 +3,9 @@
 -  c++
 - [x] go
 - [x] php
--  ruby
--  typescript
--  java
--  python
--  rust
--  c#
+- [ ] ruby
+- [ ] typescript
+- [ ] java
+- [ ] python
+- [ ] rust
+- [ ] c#
