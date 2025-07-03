@@ -1,4 +1,5 @@
 import { createRoot } from 'react-dom/client';
+import Crud from './crud';
 
-const root = createRoot(document.body);
-root.render(<h2>Hello from React!</h2>);
+const root = createRoot(document.getElementById('root'));
+root.render(<Crud />);
