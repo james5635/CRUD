@@ -2,7 +2,7 @@
 - [x] go
 - [x] php
 - [ ] ruby
-- [ ] typescript
+- [x] typescript
 - [ ] java
 - [ ] python
 - [ ] c#
