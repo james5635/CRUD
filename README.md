@@ -3,6 +3,6 @@
 - [x] php
 - [ ] ruby
 - [x] typescript
-- [ ] java
+- [x] java
 - [ ] python
 - [ ] c#
