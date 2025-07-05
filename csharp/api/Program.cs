@@ -12,7 +12,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowGatsby",
         builder =>
         {
-            builder.WithOrigins("http://localhost:8000") // Gatsby dev server
+            builder.WithOrigins("*") // Gatsby dev server
+            // builder.WithOrigins("http://localhost:8000") // Gatsby dev server
                    .AllowAnyHeader()
                    .AllowAnyMethod();
         });
