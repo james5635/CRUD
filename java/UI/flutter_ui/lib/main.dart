@@ -89,7 +89,7 @@ class _StudentListState extends State<StudentList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('brorojame')),
+      appBar: AppBar(title: const Text('students')),
       body: Center(
         child: FutureBuilder<List<Student>>(
           future: futureStudents,
