@@ -5,6 +5,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseInMemoryDatabase("Items"));
+
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowGatsby",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:8000") // Gatsby dev server
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -17,6 +30,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Use CORS middleware
+app.UseCors("AllowGatsby");
 
 app.MapGet("/items", async (ApiDbContext db) =>
     await db.Items.ToListAsync());
