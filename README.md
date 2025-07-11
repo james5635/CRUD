@@ -4,5 +4,5 @@
 - [ ] ruby
 - [x] typescript
 - [x] java
-- [ ] python
+- [x] python
 - [x] c#
