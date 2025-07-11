@@ -1,7 +1,8 @@
-## Implement CRUD in 
+## Implement CRUD in
+
 - [x] go
 - [x] php
-- [ ] ruby
+- [x] ruby
 - [x] typescript
 - [x] java
 - [x] python
